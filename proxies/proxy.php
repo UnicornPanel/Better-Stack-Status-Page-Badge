@@ -13,6 +13,7 @@ $page = strtolower(trim($page));
 // Basic hostname validation
 if (!preg_match('/^[a-z0-9.-]+$/', $page)) {
     http_response_code(400);
+    header('Content-Type: application/json');
     echo json_encode(['error' => 'Invalid page format']);
     exit;
 }
@@ -41,7 +42,25 @@ $response = @file_get_contents($url, false, $context);
 
 if ($response === false) {
     http_response_code(502);
+    header('Content-Type: application/json');
     echo json_encode(['error' => 'Unable to reach BetterStack']);
+    exit;
+}
+
+/** ---------- INSPECT UPSTREAM STATUS ---------- **/
+$status_code = 0;
+if (isset($http_response_header) && is_array($http_response_header)) {
+    if (preg_match('#HTTP/\d\.\d\s+(\d+)#', $http_response_header[0], $m)) {
+        $status_code = intval($m[1]);
+    }
+}
+if ($status_code >= 400) {
+    http_response_code($status_code);
+    header('Content-Type: application/json');
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET');
+    header('Access-Control-Allow-Headers: Content-Type');
+    echo json_encode(['error' => "Upstream error: {$status_code}"]);
     exit;
 }
 
@@ -49,6 +68,8 @@ if ($response === false) {
 
 // CORS + headers applied to both modes
 header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json');
 header('Cache-Control: max-age=30');
 

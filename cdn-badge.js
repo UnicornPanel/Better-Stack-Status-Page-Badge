@@ -23,7 +23,9 @@
     const TXT_LOADING     = SCRIPT.dataset.loading     || "Loading";
     const TXT_ERROR       = SCRIPT.dataset.error       || "Connection Error";
     const SHOW_ICON       = SCRIPT.dataset.icon !== "false";
-    const REFRESH         = parseInt(SCRIPT.dataset.refresh || "30", 10) * 1000;
+    let REFRESH = parseInt(SCRIPT.dataset.refresh || "30", 10);
+    if (!Number.isFinite(REFRESH) || REFRESH <= 0) REFRESH = 30;
+    REFRESH = Math.max(REFRESH, 30) * 1000;
 
     const STATUS_URL = `https://better-stack-status-page-badge-c3ela.bunny.run/?page=${PAGE}&state-only=1`;
 
@@ -78,6 +80,7 @@
             a = document.createElement("a");
             a.href = `https://${PAGE}`;
             a.target = "_blank";
+            a.rel = "noopener noreferrer";
             a.className = "bs-badge";
             targetEl.appendChild(a);
         }
@@ -110,8 +113,8 @@
                     case "degraded":
                         renderBadge("bs-badge-degraded", TXT_DEGRADED);
                         break;
-                    case "down":
-                        renderBadge("bs-badge-downtime", TXT_DOWN);
+                    case "downtime":
+                        renderBadge("bs-badge-down", TXT_DOWN);
                         break;
                     default:
                         renderBadge("bs-badge-degraded", TXT_DEGRADED);

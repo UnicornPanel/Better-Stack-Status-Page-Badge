@@ -25,7 +25,7 @@
     const SHOW_ICON       = SCRIPT.dataset.icon !== "false";
     const REFRESH         = parseInt(SCRIPT.dataset.refresh || "30", 10) * 1000;
 
-    const STATUS_URL = `https://dev.ooo/bs-status/proxy.php?page=${PAGE}&state-only=1`;
+    const STATUS_URL = `https://better-stack-status-page-badge-c3ela.bunny.run/?page=${PAGE}&state-only=1`;
 
     /** ---------- CSS Injection Once ---------- **/
     if (!document.querySelector("#bs-badge-style")) {
